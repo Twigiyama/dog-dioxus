@@ -9,9 +9,13 @@ fn main() {
     dioxus::launch(App);
 }
 
-#[component]
+//Create wrapper type
+#[derive(Clone)]
+struct TitleState(String);
+
+
 fn App() -> Element {
-    use_context_provider(|| TitleState("Holt Dog 🌭".to_string()))
+    use_context_provider(|| TitleState("Holt Dog 🌭".to_string()));
     static CSS: Asset = asset!("/assets/main.css");
     rsx! {
         document::Stylesheet { href: CSS }
