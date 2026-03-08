@@ -11,33 +11,41 @@ fn main() {
 
 #[component]
 fn App() -> Element {
+    use_context_provider(|| TitleState("Holt Dog 🌭".to_string()))
     static CSS: Asset = asset!("/assets/main.css");
     rsx! {
         document::Stylesheet { href: CSS }
         Title {}
-        DofView {}
+        DogView {}
     }
 }
 
 #[component]
 fn Title() -> Element {
+    let title = use_context::<TitleState>();
     rsx! {
         div {id: "title",
-            h1 { "Hot Dog 🌭"}
+            h1 { "{title.0}"}
         }
     }
 }
 
 #[component]
-fn DofView() -> Element {
+fn DogView() -> Element {
+    let mut img_src = use_signal(|| "https://images.dog.ceo/breeds/pitbull/dog-3981540_1280.jpg");
+    let skip = move |evt| {};
+    let save = move |_| {
+        img_src.set("https://upload.wikimedia.org/wikipedia/commons/1/13/Un_chien_Spitz_allemand.jpg")
+    };
     rsx! {
+
         div {id: "dogview",
-            img { src: "https://images.dog.ceo/breeds/pitbull/dog-3981540_1280.jpg", max_height: "300px" },
+            img { src: "{img_src}", max_height: "300px" },
 
         }
         div { id:"buttons",
-            button { id: "Skip", "Skip" }
-            button { id: "Save", "Save" }
+            button { onclick: skip, id: "Skip", "Skip" }
+            button { onclick: save, id: "Save", "Save" }
         }
     }
 }
