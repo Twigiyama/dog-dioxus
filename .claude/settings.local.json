@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git config core.hooksPath)",
+      "Bash(git config --list --local)"
+    ]
+  }
+}

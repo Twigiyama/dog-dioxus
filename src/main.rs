@@ -13,6 +13,12 @@ fn main() {
 #[derive(Clone)]
 struct TitleState(String);
 
+#[derive(serde::Deserialize)]
+struct DogApi {
+    message: String,
+}
+
+
 
 fn App() -> Element {
     use_context_provider(|| TitleState("Holt Dog 🌭".to_string()));
@@ -36,20 +42,25 @@ fn Title() -> Element {
 
 #[component]
 fn DogView() -> Element {
-    let mut img_src = use_signal(|| "https://images.dog.ceo/breeds/pitbull/dog-3981540_1280.jpg");
-    let skip = move |evt| {};
-    let save = move |_| {
-        img_src.set("https://upload.wikimedia.org/wikipedia/commons/1/13/Un_chien_Spitz_allemand.jpg")
-    };
+    let mut img_src = use_resource(||  async move {
+        reqwest::get("https://dog.ceo/api/breeds/image/random")
+            .await
+            .unwrap()
+            .json::<DogApi>()
+            .await
+            .unwrap()
+            .message
+    });
+
     rsx! {
 
         div {id: "dogview",
-            img { src: "{img_src}", max_height: "300px" },
+            img { src: img_src.cloned().unwrap_or_default() },
 
         }
         div { id:"buttons",
-            button { onclick: skip, id: "Skip", "Skip" }
-            button { onclick: save, id: "Save", "Save" }
+            button { onclick: move |_| img_src.restart(), id: "Skip", "Skip" }
+            button { onclick: move |_| img_src.restart(), id: "Save", "Save" }
         }
     }
 }
